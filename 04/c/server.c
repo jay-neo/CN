@@ -16,7 +16,7 @@ int main() {
     struct sockaddr_in client, server;
     int clen = sizeof(client);
 
-    bzero((char *)&server, sizeof(server));
+    bzero((char *) &server, sizeof(server));
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = inet_addr(SERVER_IP);
     server.sin_port = htons(SERVER_PORT);
@@ -40,7 +40,7 @@ int main() {
     printf("Server is listening on %s:%d\n", SERVER_IP, SERVER_PORT);
 
     while (flag) {
-        nsd = accept(sd, (struct sockaddr *)&client, (socklen_t *)&clen);
+        nsd = accept(sd, (struct sockaddr*) &client, (socklen_t *)&clen);
         if (nsd < 0) {
             perror("accept");
             continue;
@@ -53,15 +53,17 @@ int main() {
                 perror("recv");
                 break;
             } else if (bytes_received == 0) {
-                printf("Server >> Client disconnected\n");
+                printf("\nServer >> Client disconnected\n");
                 flag = 0;
                 break;
             }
             buffer[bytes_received] = '\0'; // Ensure null-termination for printing
-            printf("Server >> Client's Port = %u\n", ntohs(client.sin_port));
+            printf("\nServer >> Client's Port = %u\n", ntohs(client.sin_port));
             printf("Server >> Client's IP = %s\n", inet_ntoa(client.sin_addr));
             printf("Server >> Client's message = %s\n", buffer);
         } while (strcmp(buffer, "stop"));
+
+        printf("\nServer >> %s:%u is disconnected\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
 
         close(nsd);
     }
