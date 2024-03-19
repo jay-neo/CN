@@ -8,10 +8,12 @@
 #define CLIENT_PORT 7500
 #define SERVER_IP "127.0.0.1"
 #define SERVER_PORT 5000
+#define MSG_SIZE 512
+#define BUFFER_SIZE 512
 
 int main() {
     struct sockaddr_in client, server;
-    char msg[512], buffer[512];
+    char msg[MSG_SIZE], buffer[BUFFER_SIZE];
     int sd;
 
     bzero((char*)&client, sizeof(client));
@@ -31,8 +33,8 @@ int main() {
         printf("Enter your message: ");
         scanf("%s", msg);
         send(sd, msg, strlen(msg)+1, 0);
-        memset(buffer, 0x0, 512);
-        recv(sd, buffer, 512, 0);
+        memset(buffer, 0x0, BUFFER_SIZE);
+        recv(sd, buffer, BUFFER_SIZE, 0);
         printf("The Echo data: %s\n", buffer);
     } while (strcmp(msg,"stop"));
 

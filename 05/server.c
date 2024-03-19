@@ -10,7 +10,7 @@
 #define BUFFER_SIZE 512
 
 int main() {
-    int sd, usd;
+    int sd, nsd;
     char buffer[BUFFER_SIZE];
     struct sockaddr_in client, server;
     int clen = sizeof(client);
@@ -27,16 +27,16 @@ int main() {
     printf("The server is running on port %d\n", SERVER_PORT);
     
     while (1) {
-        usd = accept(sd, (struct sockaddr*) &client, &clen);
+        nsd = accept(sd, (struct sockaddr*) &client, &clen);
         do {
             memset(buffer, 0x0, BUFFER_SIZE);
-            recv(usd, buffer, BUFFER_SIZE, 0);
-            send(usd, buffer, strlen(buffer)+1, 0);
+            recv(nsd, buffer, BUFFER_SIZE, 0);
+            send(nsd, buffer, strlen(buffer)+1, 0);
         } while (strcmp(buffer, "stop"));
 
-        close(usd);
+        close(nsd);
     }
 
-    // close(sd);
+    close(sd);
     return 0;
 }
