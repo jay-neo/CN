@@ -6,23 +6,18 @@
 #include<arpa/inet.h>
 #include<unistd.h>
 
-#define CLIENT_IP "127.0.0.1"
-#define CLIENT_PORT 7500
 #define SERVER_IP "127.0.0.1"
-#define SERVER_PORT 5000
-#define MSG_SIZE 512
+#define SERVER_PORT 5002
 #define BUFFER_SIZE 512
+#define MSG_SIZE 512
 
 int main() {
     sleep(2);
-    int sd;
-    char msg[MSG_SIZE], buffer[BUFFER_SIZE];
-    struct sockaddr_in client, server;
 
-    bzero((char*)&client, sizeof(client));
-    client.sin_family = AF_INET;
-    client.sin_addr.s_addr = inet_addr(CLIENT_IP);
-    client.sin_port = htons(CLIENT_PORT);
+    int sd;
+    ssize_t bytes_sent, bytes_received;
+    char msg[MSG_SIZE], buffer[BUFFER_SIZE];
+    struct sockaddr_in server;
 
     bzero((char*)&server, sizeof(server));
     server.sin_family = AF_INET;
@@ -44,11 +39,26 @@ int main() {
         sleep(1);
         printf("\nClient >> Enter your message: ");
         scanf("%s", msg);
-        send(sd, msg, strlen(msg)+1, 0);
+
+        bytes_sent = send(sd, msg, strlen(msg) + 1, 0);
+        if (bytes_sent < 0) {
+            perror("send");
+            break;
+        }
+
         memset(buffer, 0x0, BUFFER_SIZE);
-        recv(sd, buffer, BUFFER_SIZE, 0);
+        bytes_received = recv(sd, buffer, BUFFER_SIZE, 0);
+        if (bytes_received < 0) {
+            perror("recv");
+            break;
+        } else if (bytes_received == 0) {
+            printf("\nClient >> Server disconnected\n");
+            break;
+        }
+        buffer[bytes_received] = '\0';
+
         printf("Client >> The Echo response: %s\n", buffer);
-    } while (strcmp(msg, "stop"));
+    } while (strcmp(msg, "exit"));
 
     close(sd);
     return 0;

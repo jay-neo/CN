@@ -19,4 +19,4 @@ run:
 	@./server & ./client
 
 clean:
-	@pkill server && rm -f server client *.o
+	@pkill server & rm -f server client *.o
