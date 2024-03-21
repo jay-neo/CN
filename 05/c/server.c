@@ -7,7 +7,7 @@
 #include <unistd.h>
 
 #define SERVER_IP "127.0.0.1"
-#define SERVER_PORT 5002
+#define SERVER_PORT 5000
 #define BUFFER_SIZE 512
 
 int main() {

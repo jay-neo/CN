@@ -40,7 +40,7 @@ fn main() {
             }
         }
 
-        if msg.trim() == "stop" {
+        if msg.trim() == "exit" {
             break;
         }
         
