@@ -26,7 +26,7 @@ fn main() {
             Err(e) => panic!("Failed to send message: {:?}", e),
         }
 
-        if msg.trim() == "stop" {
+        if msg.trim() == "exit" {
             break;
         }
         
