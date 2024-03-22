@@ -17,38 +17,44 @@ int main() {
     sd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sd < 0) {
         perror("socket");
+        close(sd);
         return 1;
     }
 
     if (connect(sd, (struct sockaddr*)&server, sizeof(server)) < 0) {
         perror("connect");
+        close(sd);
         return 1;
     }
     
-    do {
+    while (1) {
         sleep(1);
         printf("\nClient >> Enter your message: ");
         scanf("%s", msg);
 
+        if (!strcmp(msg, "exit")) {
+            break;
+        }
+
         bytes_sent = sendto(sd, msg, strlen(msg) + 1, 0, (struct sockaddr*) &server, sizeof(server));
         if (bytes_sent < 0) {
-            perror("send");
-            break;
+            perror("sendto");
+            continue;
         }
 
         memset(buffer, 0x0, BUFFER_SIZE);
         bytes_received = recvfrom(sd, buffer, BUFFER_SIZE, 0, (struct sockaddr*) &server, &(socklen_t){sizeof(server)});
         if (bytes_received < 0) {
-            perror("recv");
-            break;
+            perror("recvfrom");
+            continue;
         } else if (bytes_received == 0) {
             printf("\nClient >> Server disconnected\n");
-            break;
+            continue;
         }
         buffer[bytes_received] = '\0';
 
         printf("Client >> The Echo response: %s\n", buffer);
-    } while (strcmp(msg, "exit"));
+    }
 
     close(sd);
     return 0;

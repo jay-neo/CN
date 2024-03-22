@@ -4,6 +4,7 @@ use std::net::{UdpSocket};
 const SERVER_IP: &str = "127.0.0.1";
 const SERVER_PORT: u16 = 8080;
 
+
 fn main() {
     let server_addr = format!("{}:{}", SERVER_IP, SERVER_PORT);
 
@@ -13,8 +14,11 @@ fn main() {
     loop {
         print!("Enter your message: ");
         io::stdout().flush().unwrap(); // to ignore newline
-    
         io::stdin().read_line(&mut msg).expect("Error: Failed to read line");
+
+        if msg.trim() == "exit" {
+            break;
+        }
 
         socket.send_to(msg.as_bytes(), server_addr.clone()).expect("Failed to send message");
 
@@ -31,10 +35,6 @@ fn main() {
             Err(ref err) => {
                 panic!("Failed to receive response: {:?}", err);
             }
-        }
-
-        if msg.trim() == "exit" {
-            break;
         }
         
         msg.clear();
