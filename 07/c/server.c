@@ -1,18 +1,8 @@
-#include <stdio.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-
-#define SERVER_IP "127.0.0.1"
-#define SERVER_PORT 5000
-#define BUFFER_SIZE 512
+#include "header.h"
 
 int main() {
     char buffer[BUFFER_SIZE];
-    int listening_sd, connection_sd;
+    int listening_sd;
     struct sockaddr_in client, server;
     ssize_t bytes_received, bytes_sent;
 
@@ -32,20 +22,9 @@ int main() {
         return 1;
     }
 
-    // if (listen(listening_sd, 5) < 0) {
-    //     perror("listen");
-    //     return 1;
-    // }
-
     printf("Server is listening on port %u\n", SERVER_PORT);
 
     while (1) {
-        // connection_sd = accept(listening_sd, (struct sockaddr*) &client, &(socklen_t){sizeof(client)});
-        // if (connection_sd < 0) {
-        //     perror("accept");
-        //     continue;
-        // }
-        // printf("\nServer >> %s:%u is connected\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
 
         do {
             memset(buffer, 0x0, BUFFER_SIZE);
@@ -54,9 +33,11 @@ int main() {
                 perror("recv");
                 break;
             } else if (bytes_received == 0) {
-                printf("\nServer >> %s:%u is disconnected\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
+                printf("\nServer >> Error occurred to %s:%u\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
                 break;
             }
+
+            printf("\nServer >> %s:%u sent a message\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
             buffer[bytes_received] = '\0';
             
             bytes_sent = sendto(listening_sd, buffer, strlen(buffer) + 1, 0, (struct sockaddr*)&client, sizeof(client));
@@ -64,11 +45,8 @@ int main() {
                 perror("send");
                 break;
             }
+            
         } while (strcmp(buffer, "exit"));
-
-        // printf("\nServer >> %s:%u is manually disconnected\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
-
-        // close(connection_sd);
     }
 
     close(listening_sd);
