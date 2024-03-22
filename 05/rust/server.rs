@@ -23,7 +23,7 @@ fn handle_client(mut stream: TcpStream) {
                 if request.trim() == "exit" {
                     println!("Client disconnected from {}", peer_addr);
                     return;
-                }``
+                }
             }
             Err(err) => {
                 eprintln!("Client {} Error receiving data: {}", peer_addr, err);
