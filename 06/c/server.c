@@ -49,17 +49,22 @@ int main() {
         }
         printf("\nServer >> %s:%u is connected\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
 
-        do {
+        while (1) {
             memset(buffer, 0x0, BUFFER_SIZE);
             bytes_received = recv(connection_sd, buffer, BUFFER_SIZE - 1, 0);
             if (bytes_received < 0) {
                 perror("recv");
-                break;
+                continue;
             } else if (bytes_received == 0) {
                 printf("\nServer >> %s:%u is disconnected\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
                 break;
             }
             buffer[bytes_received] = '\0';
+
+            if (!strcmp(buffer, "exit")) {
+                printf("\nServer >> %s:%u is manually disconnected\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
+                break;
+            }
             
             if (!strcmp(buffer, "time")) {
                 response = ctime(&(time_t){time(NULL)});
@@ -69,12 +74,11 @@ int main() {
             bytes_sent = send(connection_sd, response, strlen(response) + 1, 0);
             if (bytes_sent < 0) {
                 perror("send");
-                break;
+                continue;
             }
 
-        } while (strcmp(buffer, "exit"));
+        }
 
-        printf("\nServer >> %s:%u is manually disconnected\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
 
         close(connection_sd);
     }

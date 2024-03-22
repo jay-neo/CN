@@ -35,14 +35,20 @@ int main() {
         return 1;
     }
     
-    do {
+    while (1) {
         sleep(1);
         printf("\nClient >> Enter your message: ");
         scanf("%s", msg);
 
+
         bytes_sent = send(sd, msg, strlen(msg) + 1, 0);
         if (bytes_sent < 0) {
             perror("send");
+            continue;
+        }
+
+        if (!strcmp(msg, "exit")) {
+            printf("Client >> Manual terminating from client side\n");
             break;
         }
 
@@ -50,15 +56,16 @@ int main() {
         bytes_received = recv(sd, buffer, BUFFER_SIZE, 0);
         if (bytes_received < 0) {
             perror("recv");
-            break;
+            continue;
         } else if (bytes_received == 0) {
             printf("\nClient >> Server disconnected\n");
             break;
         }
         buffer[bytes_received] = '\0';
 
+
         printf("Client >> Server response: %s\n", buffer);
-    } while (strcmp(msg, "exit"));
+    }
 
     close(sd);
     return 0;

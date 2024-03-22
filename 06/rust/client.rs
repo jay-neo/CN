@@ -25,6 +25,10 @@ fn main() {
             Err(e) => panic!("Failed to send message: {:?}", e),
         }
 
+        if msg.trim() == "exit" {
+            break;
+        }
+
         let mut response = vec![0; 1024]; // Buffer to hold the response
         match client.read(&mut response) {
             Ok(bytes_read) => {
@@ -40,10 +44,6 @@ fn main() {
             }
         }
 
-        if msg.trim() == "exit" {
-            break;
-        }
-        
         msg.clear();
     }
 

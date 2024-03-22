@@ -57,7 +57,6 @@ fn handle_client(mut stream: TcpStream) {
     println!("Client connected from {}", peer_addr);
 
     loop {
-        // this line reads data from the stream and stores it in the buffer.
         let mut buffer = [0; 1024];
         match stream.read(&mut buffer) {
             Ok(bytes_received) => {
@@ -65,20 +64,23 @@ fn handle_client(mut stream: TcpStream) {
                     println!("Client disconnected from {}", peer_addr);
                     return;
                 }
-                 // this line converts the data in the buffer into a UTF-8 enccoded string.
+
                 let request = String::from_utf8_lossy(&buffer[..bytes_received]);
+
+                if request.trim() == "exit" {
+                    println!("Client disconnected from {}", peer_addr);
+                    return;
+                }
+
                 let response = if request.trim() == "time" {
                     calculate_date_time()
                 } else {
                     "Bad Request".to_string()
                 };
 
+
                 stream.write(response.as_bytes()).expect("Failed to write response!");
 
-                if request.trim() == "exit" {
-                    println!("Client disconnected from {}", peer_addr);
-                    return;
-                }
             }
             Err(err) => {
                 eprintln!("Client {} Error receiving data: {}", peer_addr, err);
