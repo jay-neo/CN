@@ -1,2 +1,2 @@
-### Configuration and Simulation using CISCO Packet Tracer
-Configure your PC for LAN in Windows and Linux environment (configuration for Ethernet card).
+### IPC: Program Handling PIPE
+Write a program using pipe such that the content of an existing file to be written to the one end of a pipe and to be read from the other end of it.
