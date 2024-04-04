@@ -1,2 +1,2 @@
-### Configuration and Simulation using CISCO Packet Tracer
-Configuration of router and DNS, FTP, HTTP, Mail Server.
+### IPC: Program for Client-Server Communication using TCP Socket
+Write a program using TCP socket such that a client will accept a message from the user and send it to the server. The server will display the message and the IP address and port number of the client.
