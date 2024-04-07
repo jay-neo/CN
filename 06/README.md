@@ -1,2 +1,2 @@
 ### IPC: Program for Client-Server Communication using TCP Socket
-Write a program using TCP socket such that a client will accept a message from the user and send it to the server. The server will display the message and the IP address and port number of the client.
+Write a program to develop a Iterative Day-Time server using TCP socket.
