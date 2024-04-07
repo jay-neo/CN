@@ -1,2 +1,2 @@
-### IPC: Program handling PIPE
-Write a program using pipe such that the content of an existing file to be written to the one end of a pipe and to be read from the other end of it.
+### IPC: Program for Client-Server Communication using TCP Socket
+Write a program to develop an Iterative ECHO server using TCP socket.
