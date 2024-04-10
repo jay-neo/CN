@@ -13,6 +13,7 @@
 #define MSG_SIZE 512
 
 int main() {
+    sleep(2);
     int sd;
     char msg[MSG_SIZE];
     struct sockaddr_in client, server;
@@ -40,10 +41,11 @@ int main() {
     
     do {
         sleep(1);
-        printf("Client >> Enter a message: ");
-        fgets(msg, MSG_SIZE, stdin);
+        printf("\nClient >> Enter a message: ");
+        // fgets(msg, MSG_SIZE, stdin); // Error
+        scanf("%s", msg);
         send(sd, msg, strlen(msg)+1, 0);
-    }
+    } while (strcmp(msg, "stop"));
 
     close(sd);
     return 0;

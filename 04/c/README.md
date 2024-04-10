@@ -4,7 +4,7 @@ make
 ```
 
 ```sh
-(./server) & (./client)
+make run
 ```
 
 ```sh

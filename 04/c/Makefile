@@ -15,5 +15,8 @@ server.o: server.c
 client.o: client.c
 	@$(CC) $(CFLAGS) -c client.c
 
+run:
+	@./server & ./client
+
 clean:
-	@rm -f server client *.o
+	@pkill server && rm -f server client *.o

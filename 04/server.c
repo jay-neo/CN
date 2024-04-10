@@ -24,15 +24,15 @@ int main() {
     sd = socket(AF_INET, SOCK_STREAM, 0);
     bind(sd, (struct sockaddr*)&server, sizeof(server));
     listen(sd, 5);
-    printf("Server is listening on %s:%d\n", SERVER_IP, SERVER_PORT);
+    printf("Server is listening on port %d\n", SERVER_IP, SERVER_PORT);
     
     while (1) {
         nsd = accept(sd, (struct sockaddr*) &client, &clen);
         do {
             memset(buffer, 0x0, BUFFER_SIZE);
             recv(nsd, buffer, BUFFER_SIZE, 0);
-            printf("\nClient's Port = %u\n", ntohs(client.sin_port));
-            printf("Client's IP = %s\n", inet_ntoa(client.sin_addr));
+            printf("\nClient's IP = %s\n", inet_ntoa(client.sin_addr));
+            printf("Client's Port = %u\n", ntohs(client.sin_port));
             printf("Client's message = %s\n", buffer);
         } while (strcmp(buffer, "stop"));
 
