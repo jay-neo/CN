@@ -20,10 +20,10 @@ fn handle_client(mut stream: TcpStream) {
                 println!("Client {} Request = {}", peer_addr, request);
                 stream.write(request.as_bytes()).expect("Failed to write response!");
 
-                if request.trim() == "stop" {
+                if request.trim() == "exit" {
                     println!("Client disconnected from {}", peer_addr);
                     return;
-                }
+                }``
             }
             Err(err) => {
                 eprintln!("Client {} Error receiving data: {}", peer_addr, err);
@@ -31,15 +31,7 @@ fn handle_client(mut stream: TcpStream) {
             }
         }
 
-        // buffer = [0; 1024];
-        // stream.read(&mut buffer).expect("Failed to read from client!");
-        // let request = String::from_utf8_lossy(&buffer[..]);
-        // println!("Received request: {}", request);
-        // let response = "Hello, Client!".as_bytes();
-        // stream.write(response).expect("Failed to write response!");
-
-    }
-    
+    }  
 }
 
 

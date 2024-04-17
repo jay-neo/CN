@@ -19,7 +19,7 @@ fn handle_client(mut stream: TcpStream) {
                 let request = String::from_utf8_lossy(&buffer[..bytes_received]);
                 println!("Client {} Request = {}", peer_addr, request);
 
-                if request.trim() == "stop" {
+                if request.trim() == "exit" {
                     println!("Client disconnected from {}", peer_addr);
                     return;
                 }
