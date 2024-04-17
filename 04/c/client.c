@@ -6,22 +6,17 @@
 #include<arpa/inet.h>
 #include<unistd.h>
 
-#define CLIENT_IP "127.0.0.1"
-#define CLIENT_PORT 7500
 #define SERVER_IP "127.0.0.1"
 #define SERVER_PORT 5000
 #define MSG_SIZE 512
 
 int main() {
     sleep(2);
-    int sd;
-    char msg[MSG_SIZE];
-    struct sockaddr_in client, server;
 
-    bzero((char*)&client, sizeof(client));
-    client.sin_family = AF_INET;
-    client.sin_addr.s_addr = inet_addr(CLIENT_IP);
-    client.sin_port = htons(CLIENT_PORT);
+    int sd;
+    ssize_t bytes_sent;
+    char msg[MSG_SIZE];
+    struct sockaddr_in server;
 
     bzero((char*)&server, sizeof(server));
     server.sin_family = AF_INET;
@@ -41,11 +36,16 @@ int main() {
     
     do {
         sleep(1);
-        printf("\nClient >> Enter a message: ");
+        printf("\nClient >> Enter your message: ");
         // fgets(msg, MSG_SIZE, stdin); // Error
         scanf("%s", msg);
-        send(sd, msg, strlen(msg)+1, 0);
-    } while (strcmp(msg, "stop"));
+
+        bytes_sent = send(sd, msg, strlen(msg)+1, 0);
+        if (bytes_sent < 0) {
+            perror("send");
+            break;
+        }
+    } while (strcmp(msg, "exit"));
 
     close(sd);
     return 0;
