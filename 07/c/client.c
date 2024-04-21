@@ -1,14 +1,4 @@
-#include <stdio.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-
-#define SERVER_IP "127.0.0.1"
-#define SERVER_PORT 5000
-#define BUFFER_SIZE 512
+#include "header.h"
 #define MSG_SIZE 512
 
 int main() {
@@ -47,7 +37,7 @@ int main() {
         }
 
         memset(buffer, 0x0, BUFFER_SIZE);
-        bytes_received = recvfrom(sd, buffer, BUFFER_SIZE, 0, (struct sockaddr*) &server, &(socklen_t){sizeof(client)}));
+        bytes_received = recvfrom(sd, buffer, BUFFER_SIZE, 0, (struct sockaddr*) &server, &(socklen_t){sizeof(server)});
         if (bytes_received < 0) {
             perror("recv");
             break;
