@@ -1,5 +1,7 @@
-use std::io::{Read, Write};
-use std::net::{TcpListener, TcpStream};
+use std::net::{UdpSocket};
+
+const SERVER_IP: &str = "127.0.0.1";
+const SERVER_PORT: u16 = 8080;
 
 
 fn calculate_date_time() -> String {
@@ -49,66 +51,45 @@ fn calculate_date_time() -> String {
     format!("{:02}-{:02}-{} {:02}:{:02}:{:02}", days, month, years, hours, minutes, seconds)
 }
 
-
-
-fn handle_client(mut stream: TcpStream) {
-
-    let peer_addr = stream.peer_addr().expect("Failed to get peer address");
-    println!("Client connected from {}", peer_addr);
+fn handle_udpsocket(socket: &UdpSocket) {
 
     loop {
         let mut buffer = [0; 1024];
-        match stream.read(&mut buffer) {
-            Ok(bytes_received) => {
+        match socket.recv_from(&mut buffer) {
+            Ok((bytes_received, client_addr)) => {
                 if bytes_received == 0 {
-                    println!("Client disconnected from {}", peer_addr);
-                    return;
+                    println!("Client Error from {}", client_addr);
+                    break;
                 }
-
+                
                 let request = String::from_utf8_lossy(&buffer[..bytes_received]);
-
-                if request.trim() == "exit" {
-                    println!("Client disconnected from {}", peer_addr);
-                    return;
-                }
-
+                
                 let response = if request.trim() == "time" {
                     calculate_date_time()
                 } else {
                     "Bad Request".to_string()
                 };
 
-
-                stream.write(response.as_bytes()).expect("Failed to write response!");
+                socket
+                    .send_to(response.as_bytes(), &client_addr)
+                    .expect("Failed to write response!");
 
             }
             Err(err) => {
-                eprintln!("Client {} Error receiving data: {}", peer_addr, err);
-                return;
+                eprintln!("Error receiving data: {}", err);
             }
         }
-
     }
-    
 }
 
 
 fn main() {
-    let ip = "127.0.0.1";
-    let port = 8080;
-    let address = format!("{}:{}", ip, port);
+    let address = format!("{}:{}", SERVER_IP, SERVER_PORT);
     
-    let listener = TcpListener::bind(&address).expect("Failed to bind to address");
+    let socket = UdpSocket::bind(&address).expect("Failed to bind to address");
     println!("Server listening on {}", address);
 
-    for stream in listener.incoming(){
-        match stream{
-            Ok(stream) => {
-                std::thread::spawn(|| handle_client(stream));
-            }
-            Err(e) => {
-                eprintln!("Failed to establish connection: {}", e);
-            }
-        }
-    }
+    handle_udpsocket(&socket);
+
+    println!("Server terminated");
 }

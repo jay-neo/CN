@@ -1,10 +1,12 @@
 #include "header.h"
+#include <time.h>
 
 int main() {
     char buffer[BUFFER_SIZE];
     int listening_sd;
     struct sockaddr_in client, server;
     ssize_t bytes_received, bytes_sent;
+    char * response;
 
     bzero((char *) &server, sizeof(server));
     server.sin_family = AF_INET;
@@ -37,15 +39,20 @@ int main() {
             continue;
         }
 
-        printf("\nServer >> %s:%u sent a message\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
+        printf("\nServer >> %s:%u sent request\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
         buffer[bytes_received] = '\0';
-        
-        bytes_sent = sendto(listening_sd, buffer, strlen(buffer) + 1, 0, (struct sockaddr*)&client, sizeof(client));
+
+        if (!strcmp(buffer, "time")) {
+            response = ctime(&(time_t){time(NULL)});
+        } else {
+            response = "Bad Request";
+        }
+
+        bytes_sent = sendto(listening_sd, response, strlen(response) + 1, 0, (struct sockaddr*)&client, sizeof(client));
         if (bytes_sent < 0) {
             perror("sendto");
             continue;
-        }
-            
+        } 
     }
 
     close(listening_sd);

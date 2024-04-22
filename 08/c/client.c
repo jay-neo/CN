@@ -1,14 +1,4 @@
-#include <stdio.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-
-#define SERVER_IP "127.0.0.1"
-#define SERVER_PORT 5000
-#define BUFFER_SIZE 512
+#include "header.h"
 #define MSG_SIZE 512
 
 int main() {
@@ -24,14 +14,9 @@ int main() {
     server.sin_addr.s_addr = inet_addr(SERVER_IP);
     server.sin_port = htons(SERVER_PORT);
 
-    sd = socket(AF_INET, SOCK_STREAM, 0);
+    sd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sd < 0) {
         perror("socket");
-        return 1;
-    }
-
-    if (connect(sd, (struct sockaddr*)&server, sizeof(server)) < 0) {
-        perror("connect");
         return 1;
     }
     
@@ -40,29 +25,26 @@ int main() {
         printf("\nClient >> Enter your message: ");
         scanf("%s", msg);
 
-
-        bytes_sent = send(sd, msg, strlen(msg) + 1, 0);
-        if (bytes_sent < 0) {
-            perror("send");
-            continue;
-        }
-
         if (!strcmp(msg, "exit")) {
-            printf("Client >> Manual terminating from client side\n");
             break;
         }
 
+        bytes_sent = sendto(sd, msg, strlen(msg) + 1, 0, (struct sockaddr*) &server, sizeof(server));
+        if (bytes_sent < 0) {
+            perror("sendto");
+            continue;
+        }
+
         memset(buffer, 0x0, BUFFER_SIZE);
-        bytes_received = recv(sd, buffer, BUFFER_SIZE, 0);
+        bytes_received = recvfrom(sd, buffer, BUFFER_SIZE, 0, (struct sockaddr*) &server, &(socklen_t){sizeof(server)});
         if (bytes_received < 0) {
-            perror("recv");
+            perror("recvfrom");
             continue;
         } else if (bytes_received == 0) {
             printf("\nClient >> Server disconnected\n");
             break;
         }
         buffer[bytes_received] = '\0';
-
 
         printf("Client >> Server response: %s\n", buffer);
     }

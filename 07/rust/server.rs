@@ -4,14 +4,13 @@ const SERVER_IP: &str = "127.0.0.1";
 const SERVER_PORT: u16 = 8080;
 
 fn handle_udpsocket(socket: &UdpSocket) {
-
     loop {
         let mut buffer = [0; 1024];
         match socket.recv_from(&mut buffer) {
             Ok((bytes_received, client_addr)) => {
                 if bytes_received == 0 {
                     println!("Client Error from {}", client_addr);
-                    break;
+                    continue;
                 }
                 
                 let request = String::from_utf8_lossy(&buffer[..bytes_received]);
