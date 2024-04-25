@@ -5,18 +5,46 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #define SERVER_IP "127.0.0.1"
-#define SERVER_PORT 5001
+#define SERVER_PORT 5000
 #define BUFFER_SIZE 512
 
-int main() {
+void* handle_client(void *arg) {
+    int connection_sd = *(int *)arg;
     char buffer[BUFFER_SIZE];
-    pid_t pid;
-    int listening_sd, connection_sd;
-    struct sockaddr_in client, server;
     ssize_t bytes_received, bytes_sent;
 
+    do {
+        memset(buffer, 0x0, BUFFER_SIZE);
+        bytes_received = recv(connection_sd, buffer, BUFFER_SIZE - 1, 0);
+        if (bytes_received < 0) {
+            perror("recv");
+            break;
+        } else if (bytes_received == 0) {
+            break;
+        }
+        buffer[bytes_received] = '\0';
+        
+        bytes_sent = send(connection_sd, buffer, strlen(buffer) + 1, 0);
+        if (bytes_sent < 0) {
+            perror("send");
+            continue;
+        }
+    } while (strcmp(buffer, "exit"));
+
+    close(connection_sd);
+    printf("\nServer >> %s:%u disconnected\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
+
+    pthread_exit(NULL);
+}
+
+int main() {
+    int listening_sd, connection_sd;
+    struct sockaddr_in client, server;
+    pthread_t tid;
+    
     bzero((char *) &server, sizeof(server));
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = inet_addr(SERVER_IP);
@@ -48,34 +76,11 @@ int main() {
         }
         printf("\nServer >> %s:%u connected\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
 
-        pid = fork();
-        if (pid < 0) {
-            perror("Failed to fork");
-            return 1;
-        } else if (pid == 0) {
-            do {
-                memset(buffer, 0x0, BUFFER_SIZE);
-                bytes_received = recv(connection_sd, buffer, BUFFER_SIZE - 1, 0);
-                if (bytes_received < 0) {
-                    perror("recv");
-                    break;
-                } else if (bytes_received == 0) {
-                    break;
-                }
-                buffer[bytes_received] = '\0';
-                
-                bytes_sent = send(connection_sd, buffer, strlen(buffer) + 1, 0);
-                if (bytes_sent < 0) {
-                    perror("send");
-                    continue;
-                }
-            } while (strcmp(buffer, "exit"));
-
-            printf("\nServer >> %s:%u disconnected\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
+        // Multithreading Implementation
+        if (pthread_create(&tid, NULL, handle_client, &connection_sd) != 0) {
+            perror("pthread_create");
+            close(connection_sd);
         }
-        
-        close(connection_sd);
-        
     }
 
     close(listening_sd);
