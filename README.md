@@ -13,5 +13,5 @@
 1. Write a program to develop a Iterative Day-Time server using UDP socket.
 1. Write a program to develop a Concurrent ECHO server using TCP socket. Use at least two client programs to implement it.
 1. Write a program to implement Sliding Window protocol.
-1. Write a program to develop a Concurrent ECHO server using UDP socket. Use at least two client programs to implement it.
 1. Write a program using TCP socket to implement Iterative chat server.
+1. Write a program using TCP socket to implement concurrent chat server.
