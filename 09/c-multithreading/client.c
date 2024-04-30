@@ -7,12 +7,12 @@
 #include <unistd.h>
 
 #define SERVER_IP "127.0.0.1"
-#define SERVER_PORT 5001
+#define SERVER_PORT 5000
 #define BUFFER_SIZE 512
 #define MSG_SIZE 512
 
 int main() {
-    sleep(2);
+    // sleep(2);
 
     int sd;
     ssize_t bytes_sent, bytes_received;
@@ -36,7 +36,7 @@ int main() {
     }
     
     do {
-        sleep(1);
+        // sleep(1);
         printf("\nClient >> Enter your message: ");
         scanf("%s", msg);
 

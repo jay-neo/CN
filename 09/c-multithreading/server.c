@@ -35,7 +35,7 @@ void* handle_client(void *arg) {
     } while (strcmp(buffer, "exit"));
 
     close(connection_sd);
-    printf("\nServer >> %s:%u disconnected\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
+    // printf("\nServer >> %s:%u disconnected\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
 
     pthread_exit(NULL);
 }
