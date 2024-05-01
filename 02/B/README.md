@@ -400,6 +400,10 @@ netsh interface ip add dns name="<Network_Name>" 208.67.220.220 index=2
 ## References
 
 [More about ip command in Linux](https://www.cyberciti.biz/faq/linux-ip-command-examples-usage-syntax/)
+
 [Ubuntu Server: Getting started with a Linux Server](https://www.youtube.com/watch?v=2Btkx9toufg&ab_channel=ByteMyPi)
+
 [Ubuntu 22.04 : Change IP Configuration](https://www.youtube.com/watch?v=5Zlkz0KKZyg&ab_channel=NelisysDeveloper)
+
 [Top 20 Windows Network Commands](https://www.youtube.com/watch?v=AegRx0EzHmU&ab_channel=SheshChauhanITTrainer)
+
