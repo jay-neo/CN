@@ -25,7 +25,7 @@ void handle_client(const int &connection_sd, const struct sockaddr_in &client) {
     while (1) {
         memset(buffer, 0x0, BUFFER_SIZE);
 
-        int bytes_received = recv(connection_sd, buffer, BUFFER_SIZE - 1, 0);
+        ssize_t bytes_received = recv(connection_sd, buffer, BUFFER_SIZE - 1, 0);
         if (bytes_received < 0) {
             perror("recv");
             break;
