@@ -5,23 +5,92 @@
 int pipe(int pipefd[2]);
 ```
 
-In Unix-like operating systems, a pipe is a mechanism that allows two processes to communicate with each other. It provides a one-way flow of data, where one process can write data to the pipe, and the other process can read that data from the pipe. Pipes are commonly used for inter-process communication (IPC), allowing processes to pass information between each other.
+In Unix-like operating systems, a pipe is a fundamental mechanism for inter-process communication (IPC). They allow data to flow from one process to another in a unidirectional or bidirectional manner. signals and pipes support IPC for local usage. There are several types of pipes, each with different characteristics and use cases. Here are the main types of pipes:
 
-When a pipe is created, it is typically used in conjunction with the `fork` system call to create a parent process and a child process. Here's how pipes are used in the context of parent and child processes:
 
-1. **Creating a Pipe**: Before forking, a pipe is created using the `pipe` system call. This creates a pair of file descriptors: one for reading from the pipe (`pipe_fd[0]`) and one for writing to the pipe (`pipe_fd[1]`).
+### Unamed Pipe (Anonymous Pipe):
 
-2. **Forking**: After creating the pipe, the parent process calls `fork` to create a child process. Both the parent and child processes inherit the file descriptors associated with the pipe.
+- Unidirectional: Data flows in one direction only.
+- In-Memory: Exist only in memory and are not associated with any file system objects.
+- Parent-Child Communication: Typically used for communication between a parent process and its child process.
+- The pipe system call creates a pipe and returns two file descriptors: `int pipe(int pipefd[2]);`
+   - One File Descriptor for the **read end** of the pipe: `pipefd[0]`
+   - Another File Descriptor for the **write end** of the pipe: `pipefd[1]`
+- When a pipe is created, it is typically used in conjunction with the `fork` system call to create a parent process and a child process.
+- Use Cases:
+   - Simple IPC between a parent and child process, such as redirecting output or input between processes.
+- Reference: [Link](https://www.youtube.com/watch?v=sgFx6br_kB8)
 
-3. **Parent Process**: In the parent process, the parent typically closes the read end of the pipe (`pipe_fd[0]`) and writes data to the pipe using the write end of the pipe (`pipe_fd[1]`).
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
 
-4. **Child Process**: In the child process, the child typically closes the write end of the pipe (`pipe_fd[1]`) and reads data from the pipe using the read end of the pipe (`pipe_fd[0]`).
+int main() {
+    int pipefd[2];
+    pid_t pid;
+    char buffer[128];
 
-5. **Data Transfer**: Once the pipe is set up and the processes are running, the parent process can write data to the pipe, and the child process can read that data from the pipe. This allows the processes to communicate and exchange information.
+    // Create the pipe
+    if (pipe(pipefd) == -1) {
+        perror("pipe");
+        return 1;
+    }
 
-6. **Closing the Pipe**: After the communication is complete, both the parent and child processes should close their respective ends of the pipe (`pipe_fd[0]` and `pipe_fd[1]`) to release system resources.
+    // Fork the process
+    pid = fork();
+    if (pid == -1) {
+        perror("fork");
+        return 1;
+    }
 
-Overall, pipes provide a simple and efficient way for parent and child processes to communicate in Unix-like operating systems. They are often used in conjunction with forking to implement various forms of IPC.
+    if (pid == 0) {
+        // Child process
+        close(pipefd[1]); // Close unused write end
+
+        read(pipefd[0], buffer, sizeof(buffer)); // Read from the pipe
+        printf("Child received: %s\n", buffer);
+
+        close(pipefd[0]); // Close read end
+    } else {
+        // Parent process
+        close(pipefd[0]); // Close unused read end
+
+        const char *msg = "Hello from parent!";
+        write(pipefd[1], msg, strlen(msg) + 1); // Write to the pipe
+
+        close(pipefd[1]); // Close write end
+    }
+
+    return 0;
+}
+
+```
+
+
+### Named Pipe (FIFO):
+
+- Bidirectional: Can be used for two-way communication.
+- Named: Associated with a name in the file system, which can be accessed by unrelated processes.
+- Persistence: The named pipe exists in the file system as a special file.
+- Use Cases:
+   - IPC between unrelated processes that do not share a common ancestor.
+   - Long-lasting IPC mechanisms where pipes need to exist beyond the lifespan of the processes.
+- Reference: [[Link-1]](https://www.youtube.com/watch?v=NHs42-rJeWU) [[Link-2]](https://www.youtube.com/watch?v=tPMmazzn5tM)
+
+```sh
+# Create a named pipe
+mkfifo myfifo
+
+# Write to the pipe in one terminal
+echo "Hello from terminal 1" > myfifo
+
+# Read from the pipe in another terminal
+cat myfifo
+
+```
+
+
 
 ---
 
